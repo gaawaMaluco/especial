@@ -9,7 +9,7 @@
 
         body {
             font-family: 'Nunito', sans-serif;
-            background-color: #ffb3b3; /* Vermelho suave / Rosa pastel */
+            background-color: #ffb3b3; 
             display: flex;
             justify-content: center;
             align-items: center;
@@ -37,7 +37,6 @@
             color: #d14747;
         }
 
-        /* Botões Iniciais */
         .buttons {
             display: flex;
             justify-content: center;
@@ -69,12 +68,11 @@
         #btn-nao {
             background-color: #f2f2f2;
             color: #555;
-            position: relative; /* Necessário para mover */
+            position: relative; 
         }
 
-        /* Seção de Detalhes (Calendário e Opções) */
         #detalhes, #final {
-            display: none; /* Escondido inicialmente */
+            display: none; 
             flex-direction: column;
             gap: 15px;
             text-align: left;
@@ -114,7 +112,6 @@
             background-color: #e60000;
         }
 
-        /* Decoração de corações flutuantes no fundo */
         .hearts {
             position: absolute;
             top: 0;
@@ -177,37 +174,33 @@
 
         // Lógica do botão "Não" fugir
         function moverBotao() {
-            // Calcula um novo X e Y aleatório dentro da tela
             const maxX = window.innerWidth - btnNao.offsetWidth;
             const maxY = window.innerHeight - btnNao.offsetHeight;
             
             const randomX = Math.floor(Math.random() * maxX);
             const randomY = Math.floor(Math.random() * maxY);
 
-            // Tira o botão do fluxo da tela para ele voar livremente
             btnNao.style.position = 'fixed';
             btnNao.style.left = randomX + 'px';
             btnNao.style.top = randomY + 'px';
         }
 
-        // Ativa a fuga tanto no hover (computador) quanto no toque/clique (celular)
         btnNao.addEventListener('mouseover', moverBotao);
         btnNao.addEventListener('touchstart', moverBotao);
         btnNao.addEventListener('click', moverBotao);
 
-        // Quando ela clica no Sim
+        // Quando clica no Sim
         btnSim.addEventListener('click', () => {
             divPergunta.style.display = 'none';
             divDetalhes.style.display = 'flex';
         });
 
-        // Quando ela preenche e confirma os detalhes
+        // Quando confirma os detalhes e envia o email
         btnConfirmar.addEventListener('click', () => {
             const dataStr = document.getElementById('data').value;
             const hora = document.getElementById('hora').value;
             const local = document.querySelector('input[name="local"]:checked').value;
 
-            // Formata a data bonitinha (opcional)
             let dataFormatada = dataStr;
             if (dataStr) {
                 const partes = dataStr.split('-');
@@ -219,14 +212,43 @@
                 return;
             }
 
-            // Mostra o resultado final
-            document.getElementById('resumo').innerText = `Encontro marcado na ${local} dia ${dataFormatada} às ${hora} ❤️`;
-            
-            divDetalhes.style.display = 'none';
-            divFinal.style.display = 'flex';
+            btnConfirmar.innerText = "Enviando convite... 💌";
+            btnConfirmar.disabled = true;
+
+            // Dados que vão para o seu email
+            const dadosEmail = {
+                _subject: "💖 ELA ACEITOU! Novo date marcado!",
+                _captcha: "false", // Evita que apareça aquele desafio de robô para ela
+                Local_Escolhido: local,
+                Data_do_Date: dataFormatada,
+                Horario: hora
+            };
+
+            // Envio direto para o seu email via FormSubmit
+            fetch('https://formsubmit.co/ajax/copiabarataoriginial@gmail.com', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(dadosEmail)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Mostra a tela de sucesso para ela
+                document.getElementById('resumo').innerText = `Encontro marcado na ${local} dia ${dataFormatada} às ${hora} ❤️`;
+                divDetalhes.style.display = 'none';
+                divFinal.style.display = 'flex';
+            })
+            .catch(error => {
+                alert("Ops, algo deu errado ao enviar. Mas o date está de pé!");
+                document.getElementById('resumo').innerText = `Encontro marcado na ${local} dia ${dataFormatada} às ${hora} ❤️`;
+                divDetalhes.style.display = 'none';
+                divFinal.style.display = 'flex';
+            });
         });
 
-        // Efeitinhos de corações no fundo (Bônus)
+        // Corações de fundo
         const container = document.getElementById('hearts-container');
         for (let i = 0; i < 15; i++) {
             let heart = document.createElement('div');
