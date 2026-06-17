@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Um convite especial ❤️</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #ffb3b3; /* Vermelho suave / Rosa pastel */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+            color: #5a1a1a;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #d14747;
+        }
+
+        /* Botões Iniciais */
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 10px 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #btn-sim {
+            background-color: #ff4d4d;
+            color: white;
+            box-shadow: 0 4px 6px rgba(255, 77, 77, 0.3);
+        }
+
+        #btn-sim:hover {
+            transform: scale(1.1);
+            background-color: #e60000;
+        }
+
+        #btn-nao {
+            background-color: #f2f2f2;
+            color: #555;
+            position: relative; /* Necessário para mover */
+        }
+
+        /* Seção de Detalhes (Calendário e Opções) */
+        #detalhes, #final {
+            display: none; /* Escondido inicialmente */
+            flex-direction: column;
+            gap: 15px;
+            text-align: left;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        input[type="date"], input[type="time"] {
+            padding: 10px;
+            border: 1px solid #ffb3b3;
+            border-radius: 10px;
+            font-family: inherit;
+        }
+
+        .opcoes {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .opcoes label {
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .confirmar-btn {
+            background-color: #ff4d4d;
+            color: white;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .confirmar-btn:hover {
+            background-color: #e60000;
+        }
+
+        /* Decoração de corações flutuantes no fundo */
+        .hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hearts" id="hearts-container"></div>
+
+    <div class="container">
+        <div id="pergunta">
+            <h1>Você aceita sair comigo? 💖</h1>
+            <div class="buttons">
+                <button id="btn-sim">Sim!</button>
+                <button id="btn-nao">Não</button>
+            </div>
+        </div>
+
+        <div id="detalhes">
+            <h1 style="font-size: 1.5em;">Eba! Vamos marcar os detalhes 🥰</h1>
+            
+            <label for="data">Qual dia?</label>
+            <input type="date" id="data" required>
+
+            <label for="hora">Qual horário?</label>
+            <input type="time" id="hora" required>
+
+            <label>Onde vamos?</label>
+            <div class="opcoes">
+                <label><input type="radio" name="local" value="Sorveteria" checked> 🍦 Sorveteria</label>
+                <label><input type="radio" name="local" value="Parque"> 🌳 Parque</label>
+                <label><input type="radio" name="local" value="Hamburgueria"> 🍔 Hamburgueria</label>
+                <label><input type="radio" name="local" value="Cafeteria"> ☕ Cafeteria</label>
+                <label><input type="radio" name="local" value="Cinema"> 🍿 Cinema</label>
+            </div>
+
+            <button class="confirmar-btn" id="btn-confirmar">Confirmar Encontro!</button>
+        </div>
+
+        <div id="final">
+            <h1>Tudo certo! 🎉</h1>
+            <p>Mal posso esperar pelo nosso date!</p>
+            <p id="resumo" style="font-weight: bold; color: #ff4d4d;"></p>
+        </div>
+    </div>
+
+    <script>
+        const btnNao = document.getElementById('btn-nao');
+        const btnSim = document.getElementById('btn-sim');
+        const btnConfirmar = document.getElementById('btn-confirmar');
+        const divPergunta = document.getElementById('pergunta');
+        const divDetalhes = document.getElementById('detalhes');
+        const divFinal = document.getElementById('final');
+
+        // Lógica do botão "Não" fugir
+        function moverBotao() {
+            // Calcula um novo X e Y aleatório dentro da tela
+            const maxX = window.innerWidth - btnNao.offsetWidth;
+            const maxY = window.innerHeight - btnNao.offsetHeight;
+            
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+
+            // Tira o botão do fluxo da tela para ele voar livremente
+            btnNao.style.position = 'fixed';
+            btnNao.style.left = randomX + 'px';
+            btnNao.style.top = randomY + 'px';
+        }
+
+        // Ativa a fuga tanto no hover (computador) quanto no toque/clique (celular)
+        btnNao.addEventListener('mouseover', moverBotao);
+        btnNao.addEventListener('touchstart', moverBotao);
+        btnNao.addEventListener('click', moverBotao);
+
+        // Quando ela clica no Sim
+        btnSim.addEventListener('click', () => {
+            divPergunta.style.display = 'none';
+            divDetalhes.style.display = 'flex';
+        });
+
+        // Quando ela preenche e confirma os detalhes
+        btnConfirmar.addEventListener('click', () => {
+            const dataStr = document.getElementById('data').value;
+            const hora = document.getElementById('hora').value;
+            const local = document.querySelector('input[name="local"]:checked').value;
+
+            // Formata a data bonitinha (opcional)
+            let dataFormatada = dataStr;
+            if (dataStr) {
+                const partes = dataStr.split('-');
+                dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+
+            if(!dataStr || !hora) {
+                alert("Por favorzinho, escolha um dia e um horário! 🥺");
+                return;
+            }
+
+            // Mostra o resultado final
+            document.getElementById('resumo').innerText = `Encontro marcado na ${local} dia ${dataFormatada} às ${hora} ❤️`;
+            
+            divDetalhes.style.display = 'none';
+            divFinal.style.display = 'flex';
+        });
+
+        // Efeitinhos de corações no fundo (Bônus)
+        const container = document.getElementById('hearts-container');
+        for (let i = 0; i < 15; i++) {
+            let heart = document.createElement('div');
+            heart.innerHTML = '💖';
+            heart.style.position = 'absolute';
+            heart.style.fontSize = Math.random() * 20 + 10 + 'px';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.top = Math.random() * 100 + 'vh';
+            heart.style.opacity = Math.random() * 0.5 + 0.2;
+            container.appendChild(heart);
+        }
+    </script>
+</body>
+</html>
